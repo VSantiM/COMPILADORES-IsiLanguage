@@ -1,6 +1,6 @@
 grammar IsiLang;
 
-prog	: 'programa' bloco 'fimprog';
+prog	: 'programa' bloco 'fimprog'
 		;
 		
 bloco	: (cmd)+
@@ -44,3 +44,5 @@ ID		: [a-z] ([a-z] | [A-Z] | [0-9])*
 
 NUMBER	: [0-9]+ ('.' [0-9]+)?
 		;
+		
+WS	: (' ' | '\t' | '\n' | '\r') -> skip;

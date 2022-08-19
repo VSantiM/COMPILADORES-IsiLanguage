@@ -2,8 +2,9 @@ package br.com.isilanguage.datastructures;
 
 public class IsiVariable extends IsiSymbol {
 
-	public static final int NUMBER=0;
+	public static final int INT=0;
 	public static final int	TEXT  =1;
+	public static final int DECIMAL = 2;
 	
 	private int type;
 	private String value;
@@ -36,7 +37,11 @@ public class IsiVariable extends IsiSymbol {
 	
 	public String generateJavaCode() {
 		String str;
-		if(type == NUMBER) {
+		if(type == INT) {
+			return "int " + super.name + ";";
+		}
+		
+		if(type == DECIMAL) {
 			return "double " + super.name + ";";
 		}
 		return "String " + super.name + ";";

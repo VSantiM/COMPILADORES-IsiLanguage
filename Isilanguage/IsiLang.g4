@@ -83,8 +83,9 @@ declaravar 	: tipo ID 	{
 			 	 )* SC
 			;
 
-tipo		: 'numero' { _tipo = IsiVariable.NUMBER;}
+tipo		: 'inteiro' { _tipo = IsiVariable.INT;}
 			| 'texto' { _tipo = IsiVariable.TEXT;}
+			| 'decimal' { _tipo = IsiVariable.DECIMAL;}
 			;
 		
 bloco	: 	{ 
@@ -147,7 +148,7 @@ cmdif	: 	'se'
 			AP 
 			ID {_exprDecision = _input.LT(-1).getText(); }
 			OPREL {_exprDecision += _input.LT(-1).getText(); }
-			(ID | NUMBER) {_exprDecision += _input.LT(-1).getText(); }
+			(ID | INT | DECIMAL) {_exprDecision += _input.LT(-1).getText(); }
 			FP 
 			'entao' 
 			ACH 
@@ -184,7 +185,12 @@ termo	: ID {
 				_exprContent += _input.LT(-1).getText();
 			} 
 		| 
-			NUMBER
+			INT
+			{
+				_exprContent += _input.LT(-1).getText();
+			}
+		| 
+			DECIMAL
 			{
 				_exprContent += _input.LT(-1).getText();
 			}
@@ -220,7 +226,10 @@ FCH	: '}'
 ID		: [a-z] ([a-z] | [A-Z] | [0-9])*
 		;
 
-NUMBER	: [0-9]+ ('.' [0-9]+)?
+DECIMAL	: [0-9]+ ('.' [0-9]+)?
+		;
+		
+INT		: [0-9]+
 		;
 		
 WS	: (' ' | '\t' | '\n' | '\r') -> skip;

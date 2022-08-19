@@ -1,15 +1,18 @@
 programa
 	
-	numero a, b;
+	inteiro a, b, c;
+	decimal x, y, z;
 	texto t1, t2;
 	
 	leia(a);
 	leia(b);
 	
-	a = 3 + 2 * 3 / b;
+	a = t1;
+	c = 3.3;
 	se ( a > b ) entao {
 		escreva(a);
 	} senao{
 		escreva(b);
 	}
+	escreva(c);
 fimprog;

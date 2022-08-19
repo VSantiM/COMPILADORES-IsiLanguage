@@ -16,10 +16,22 @@ public class CommandLeitura extends AbstractCommand {
 	public String toString() {
 		return "CommandLeitura [id=" + id + "]";
 	}
+	
+	private String ScannerType(int type) {
+		if(type == IsiVariable.INT) {
+			return "nextInt();";
+		}
+		
+		if(type == IsiVariable.DECIMAL) {
+			return "nextDouble();";
+		}
+		
+		return "nextLine();";
+	}
 
 	@Override
 	public String generateJavaCode() {
-		return id + " = _key." + (var.getType()==IsiVariable.NUMBER? "nextDouble();" : "nextLine();");
+		return id + " = _key." + ScannerType(var.getType());
 	}
 	
 	

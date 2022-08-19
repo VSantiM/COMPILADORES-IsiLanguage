@@ -1,27 +1,193 @@
 grammar IsiLang;
 
-prog	: 'programa' bloco 'fimprog'
+@header{
+	import br.com.isilanguage.datastructures.IsiSymbol;
+	import br.com.isilanguage.datastructures.IsiVariable;
+	import br.com.isilanguage.datastructures.IsiSymbolTable;
+	import br.com.isilanguage.exceptions.IsiSemanticException;
+	import br.com.isilanguage.ast.IsiProgram;
+	import br.com.isilanguage.ast.AbstractCommand;
+	import br.com.isilanguage.ast.CommandLeitura;
+	import br.com.isilanguage.ast.CommandEscrita;
+	import br.com.isilanguage.ast.CommandAtribuicao;
+	import br.com.isilanguage.ast.CommandDecisao;
+	import java.util.ArrayList;
+	import java.util.Stack;
+}
+
+@members{
+	private int _tipo;
+	private String _varName;
+	private String _varValue;
+	private IsiSymbolTable symbolTable = new IsiSymbolTable();
+	private IsiSymbol symbol;
+	private IsiProgram program = new IsiProgram();
+	private ArrayList<AbstractCommand> mainThread;
+	private Stack<ArrayList<AbstractCommand>> stack = new Stack<ArrayList<AbstractCommand>>();
+	private String _readID;
+	private String _writeID;
+	private String _exprID;
+	private String _exprContent;
+	private String _exprDecision;
+	private ArrayList<AbstractCommand> listaTrue;
+	private ArrayList<AbstractCommand> listaFalse;
+	
+	public void verificaId(String id){
+		if(!symbolTable.exists(id)){
+			throw new IsiSemanticException("Symbol " + id + " not declared");
+		}
+	}
+	
+	public void exibeComandos(){
+		for(AbstractCommand c: program.getComandos()){
+			System.out.println(c);
+		}
+	}
+	
+	public void generateCode(){
+		program.generateTarget();
+	}
+}
+
+prog	: 'programa' decl bloco 'fimprog'
+		{ 
+			program.setVarTable(symbolTable);
+			program.setComandos(stack.pop());
+		}
 		;
 		
-bloco	: (cmd)+
+decl	: (declaravar)*
 		;
 
-cmd		: cmdleitura | cmdescrita | cmdattrib
-		;
-		
-cmdleitura	: 'leia' AP ID FP SC
+declaravar 	: tipo ID 	{
+							_varName = _input.LT(-1).getText();
+							_varValue = null;
+							symbol = new IsiVariable(_varName, _tipo, _varValue);
+							if(!symbolTable.exists(_varName)){
+								symbolTable.add(symbol);
+							}else{
+								throw new IsiSemanticException("Symbol "+_varName + " already declared");
+							}
+						}
+			 	(VIR
+			 	 ID	{
+							_varName = _input.LT(-1).getText();
+							_varValue = null;
+							symbol = new IsiVariable(_varName, _tipo, _varValue);
+							if(!symbolTable.exists(_varName)){
+								symbolTable.add(symbol);
+							}else{
+								throw new IsiSemanticException("Symbol "+_varName + " already declared");
+							}
+						}
+			 	 )* SC
 			;
 
-cmdescrita	: 'escreva' AP ID FP SC
+tipo		: 'numero' { _tipo = IsiVariable.NUMBER;}
+			| 'texto' { _tipo = IsiVariable.TEXT;}
+			;
+		
+bloco	: 	{ 
+				mainThread = new ArrayList<AbstractCommand>();
+				stack.push(mainThread);
+			}
+		 (cmd)+
+		;
+
+cmd		: cmdleitura { }
+ 		| cmdescrita { }
+ 		| cmdattrib { }
+ 		| cmdif
+		;
+		
+cmdleitura	: 'leia' AP 
+					 ID { 
+					 		verificaId(_input.LT(-1).getText());
+					 		_readID = _input.LT(-1).getText();
+					 	}
+					 FP 
+					 SC
+					 {
+					 	IsiVariable var = (IsiVariable)symbolTable.get(_readID);
+					 	CommandLeitura cmd = new CommandLeitura(_readID, var);
+					 	stack.peek().add(cmd);
+					 }
+			;
+
+cmdescrita	: 'escreva' AP
+						ID {
+								verificaId(_input.LT(-1).getText());
+								_writeID = _input.LT(-1).getText();
+							}
+						FP
+						SC
+						{
+						 	CommandEscrita cmd = new CommandEscrita(_writeID);
+						 	stack.peek().add(cmd);
+						 }
 			;
 			
-cmdattrib	: ID ATTR expr SC
+cmdattrib	: 	ID 
+				{
+					verificaId(_input.LT(-1).getText());
+					_exprID = _input.LT(-1).getText();
+				}
+				ATTR{
+					_exprContent = "";
+				}
+				expr
+				SC
+				{
+					CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent);
+					stack.peek().add(cmd);
+				}
 			;
+
+cmdif	: 	'se'
+			AP 
+			ID {_exprDecision = _input.LT(-1).getText(); }
+			OPREL {_exprDecision += _input.LT(-1).getText(); }
+			(ID | NUMBER) {_exprDecision += _input.LT(-1).getText(); }
+			FP 
+			'entao' 
+			ACH 
+			{ 
+				mainThread = new ArrayList<AbstractCommand>();
+				stack.push(mainThread);
+			}
+			(cmd)+ 
+			FCH
+			{
+				listaTrue = stack.pop();
+			}
+			('senao'
+			 ACH 
+			 {
+			 	mainThread = new ArrayList<AbstractCommand>();
+				stack.push(mainThread);
+			 }
+			 (cmd)+ 
+			 FCH{
+				listaFalse = stack.pop();
+				CommandDecisao cmd = new CommandDecisao(_exprDecision, listaTrue, listaFalse);
+				stack.peek().add(cmd);
+			})?
+		;
 	
-expr	: termo ( OP termo )*
+expr	: 	termo ( 
+			OP {_exprContent += _input.LT(-1).getText();}
+			termo )*
 		;
 		
-termo	: ID | NUMBER
+termo	: ID {
+				verificaId(_input.LT(-1).getText());
+				_exprContent += _input.LT(-1).getText();
+			} 
+		| 
+			NUMBER
+			{
+				_exprContent += _input.LT(-1).getText();
+			}
 		;
 		
 AP	: '('
@@ -38,6 +204,18 @@ OP	: '+' | '-' | '*' | '/'
 
 ATTR	: '='
 		;
+		
+VIR		: ','
+		;
+		
+OPREL 	: '>' | '<' | '>=' | '<=' | '==' | '!='
+		;
+		
+ACH	: '{'
+	;
+	
+FCH	: '}'
+	;
 
 ID		: [a-z] ([a-z] | [A-Z] | [0-9])*
 		;

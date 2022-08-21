@@ -1,5 +1,5 @@
-// Generated from IsiLang.g4 by ANTLR 4.7.1
 package br.com.isilanguage.parser;
+// Generated from IsiLang.g4 by ANTLR 4.7.2
 
 	import br.com.isilanguage.datastructures.IsiSymbol;
 	import br.com.isilanguage.datastructures.IsiVariable;
@@ -11,6 +11,7 @@ package br.com.isilanguage.parser;
 	import br.com.isilanguage.ast.CommandEscrita;
 	import br.com.isilanguage.ast.CommandAtribuicao;
 	import br.com.isilanguage.ast.CommandDecisao;
+	import br.com.isilanguage.ast.CommandEnquanto;
 	import java.util.ArrayList;
 	import java.util.Stack;
 
@@ -145,6 +146,18 @@ public class IsiLangBaseListener implements IsiLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCmdif(IsiLangParser.CmdifContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCmdwhile(IsiLangParser.CmdwhileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCmdwhile(IsiLangParser.CmdwhileContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

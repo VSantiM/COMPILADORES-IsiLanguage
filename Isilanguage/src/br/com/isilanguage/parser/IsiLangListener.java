@@ -1,5 +1,5 @@
-// Generated from IsiLang.g4 by ANTLR 4.7.1
 package br.com.isilanguage.parser;
+// Generated from IsiLang.g4 by ANTLR 4.7.2
 
 	import br.com.isilanguage.datastructures.IsiSymbol;
 	import br.com.isilanguage.datastructures.IsiVariable;
@@ -11,6 +11,7 @@ package br.com.isilanguage.parser;
 	import br.com.isilanguage.ast.CommandEscrita;
 	import br.com.isilanguage.ast.CommandAtribuicao;
 	import br.com.isilanguage.ast.CommandDecisao;
+	import br.com.isilanguage.ast.CommandEnquanto;
 	import java.util.ArrayList;
 	import java.util.Stack;
 
@@ -121,6 +122,16 @@ public interface IsiLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCmdif(IsiLangParser.CmdifContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link IsiLangParser#cmdwhile}.
+	 * @param ctx the parse tree
+	 */
+	void enterCmdwhile(IsiLangParser.CmdwhileContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link IsiLangParser#cmdwhile}.
+	 * @param ctx the parse tree
+	 */
+	void exitCmdwhile(IsiLangParser.CmdwhileContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link IsiLangParser#expr}.
 	 * @param ctx the parse tree

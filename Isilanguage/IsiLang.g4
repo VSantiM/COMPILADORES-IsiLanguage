@@ -11,6 +11,7 @@ grammar IsiLang;
 	import br.com.isilanguage.ast.CommandEscrita;
 	import br.com.isilanguage.ast.CommandAtribuicao;
 	import br.com.isilanguage.ast.CommandDecisao;
+	import br.com.isilanguage.ast.CommandEnquanto;
 	import java.util.ArrayList;
 	import java.util.Stack;
 }
@@ -20,6 +21,7 @@ grammar IsiLang;
 	private String _varName;
 	private String _varValue;
 	private IsiSymbolTable symbolTable = new IsiSymbolTable();
+	private IsiSymbolTable symbolTableAtribuidos = new IsiSymbolTable();
 	private IsiSymbol symbol;
 	private IsiProgram program = new IsiProgram();
 	private ArrayList<AbstractCommand> mainThread;
@@ -31,6 +33,7 @@ grammar IsiLang;
 	private String _exprDecision;
 	private ArrayList<AbstractCommand> listaTrue;
 	private ArrayList<AbstractCommand> listaFalse;
+	private ArrayList<AbstractCommand> listaComandos;
 	
 	public void verificaId(String id){
 		if(!symbolTable.exists(id)){
@@ -52,7 +55,16 @@ grammar IsiLang;
 prog	: 'programa' decl bloco 'fimprog'
 		{ 
 			program.setVarTable(symbolTable);
+			program.setVarTable(symbolTableAtribuidos);
 			program.setComandos(stack.pop());
+			
+			ArrayList<IsiSymbol> listaSimbolos = symbolTable.getAllSymbols();
+						
+			for(IsiSymbol variavel : listaSimbolos){
+				if(!symbolTableAtribuidos.exists(variavel.getName())) {
+					System.out.println("WARNING: Variável" + variavel + " Inicializada, mas não atribuida");
+				}
+			}
 		}
 		;
 		
@@ -99,6 +111,7 @@ cmd		: cmdleitura { }
  		| cmdescrita { }
  		| cmdattrib { }
  		| cmdif
+ 		| cmdwhile
 		;
 		
 cmdleitura	: 'leia' AP 
@@ -139,6 +152,12 @@ cmdattrib	: 	ID
 				expr
 				SC
 				{
+					_varName = _input.LT(-1).getText();
+					
+					symbol = new IsiVariable(_exprID, _tipo, _exprContent);
+					if (!symbolTableAtribuidos.exists(_exprID)) {
+						symbolTableAtribuidos.add(symbol);
+					}
 					CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent);
 					stack.peek().add(cmd);
 				}
@@ -168,13 +187,35 @@ cmdif	: 	'se'
 				stack.push(mainThread);
 			 }
 			 (cmd)+ 
-			 FCH{
+			 FCH
+			 {
 				listaFalse = stack.pop();
+			})?
+			{
 				CommandDecisao cmd = new CommandDecisao(_exprDecision, listaTrue, listaFalse);
 				stack.peek().add(cmd);
-			})?
+			}
 		;
 	
+cmdwhile : 'enquanto'
+			AP
+			ID {_exprDecision = _input.LT(-1).getText(); }
+			OPREL {_exprDecision += _input.LT(-1).getText(); }
+			(ID | INT | DECIMAL) {_exprDecision += _input.LT(-1).getText(); }
+			FP 
+			ACH 
+			{ 
+				mainThread = new ArrayList<AbstractCommand>();
+				stack.push(mainThread);
+			}
+			(cmd)+ 
+			FCH
+			{ 
+				listaComandos = stack.pop();
+				CommandEnquanto cmd = new CommandEnquanto(_exprDecision, listaComandos);
+				stack.peek().add(cmd);
+			}
+		;
 expr	: 	termo ( 
 			OP {_exprContent += _input.LT(-1).getText();}
 			termo )*

@@ -35,6 +35,12 @@ grammar IsiLang;
 	private ArrayList<AbstractCommand> listaFalse;
 	private ArrayList<AbstractCommand> listaComandos;
 	
+	public int verificaAtribuicao(String input) {
+			if(input.contains("\"")) return 1;
+			if(input.contains(".")) return 2;
+			return 0;
+	}
+	
 	public void verificaId(String id){
 		if(!symbolTable.exists(id)){
 			throw new IsiSemanticException("Symbol " + id + " not declared");
@@ -55,14 +61,16 @@ grammar IsiLang;
 prog	: 'programa' decl bloco 'fimprog'
 		{ 
 			program.setVarTable(symbolTable);
-			program.setVarTable(symbolTableAtribuidos);
 			program.setComandos(stack.pop());
+			
+			program.setVarTable(symbolTableAtribuidos);
+			
 			
 			ArrayList<IsiSymbol> listaSimbolos = symbolTable.getAllSymbols();
 						
 			for(IsiSymbol variavel : listaSimbolos){
 				if(!symbolTableAtribuidos.exists(variavel.getName())) {
-					System.out.println("WARNING: Variável" + variavel + " Inicializada, mas não atribuida");
+					System.out.println("WARNING: Variável" + variavel.getName() + " inicializada, mas não atribuida");
 				}
 			}
 		}
@@ -154,10 +162,21 @@ cmdattrib	: 	ID
 				{
 					_varName = _input.LT(-1).getText();
 					
+					
+					
 					symbol = new IsiVariable(_exprID, _tipo, _exprContent);
+					
+					boolean validacaoTipoIgual = (((IsiVariable)symbolTable.get(_exprID)).getType() == verificaAtribuicao(_exprContent));
+
+					if(!validacaoTipoIgual) {
+						throw new IsiSemanticException("Value " + _exprContent + " missmatches variable " + _exprID + " type");
+					}
+				
+
 					if (!symbolTableAtribuidos.exists(_exprID)) {
 						symbolTableAtribuidos.add(symbol);
 					}
+					
 					CommandAtribuicao cmd = new CommandAtribuicao(_exprID, _exprContent);
 					stack.peek().add(cmd);
 				}
@@ -235,6 +254,11 @@ termo	: ID {
 			{
 				_exprContent += _input.LT(-1).getText();
 			}
+		|
+			TEXTO
+			{
+				_exprContent += _input.LT(-1).getText();
+			}
 		;
 		
 AP	: '('
@@ -272,5 +296,11 @@ DECIMAL	: [0-9]+ ('.' [0-9]+)?
 		
 INT		: [0-9]+
 		;
+
+
 		
-WS	: (' ' | '\t' | '\n' | '\r') -> skip;
+TEXTO	: '"' .*? '"'
+		;
+	
+		
+WS	: (' ' | '\t' | '\n' | '\r') -> skip;	

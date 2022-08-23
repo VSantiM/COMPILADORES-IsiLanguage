@@ -1,18 +1,22 @@
 programa
 	
-	inteiro a, b, c;
+	inteiro a, c, b;
 	decimal x, y, z;
-	texto t1, t2;
+	texto t1;
 	
 	leia(a);
 	leia(b);
 	
-	a = t1;
-	c = 3.3;
+	c = 2;
+	a = 1;
+	b = 1;
+	x = 1.5;
 	se ( a > b ) entao {
 		escreva(a);
-	} senao{
-		escreva(b);
 	}
-	escreva(c);
+	
+	enquanto (a > b) {
+		escreva(a);
+	}
+	
 fimprog;

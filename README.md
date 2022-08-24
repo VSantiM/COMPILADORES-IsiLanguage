@@ -4,9 +4,9 @@
 #### Link para o vídeo no youtube explicando o compilador: [link](https://www.youtube.com) 
 
 Integrantes:
-- Erick
+- Erick Henrique Silva 11201812308
 - Marcos Moreira Lopes 11201810618
-- Matheus Pacheco de Oliveira
+- Matheus Pacheco de Oliveira 11201722352
 - Thaina Abade Siemerink 11118815
 - Victor Santi Martins 11201721890
 

@@ -126,6 +126,8 @@ public class IsiLangParser extends Parser {
 		private ArrayList<AbstractCommand> listaTrue;
 		private ArrayList<AbstractCommand> listaFalse;
 		private ArrayList<AbstractCommand> listaComandos;
+		private ArrayList<AbstractCommand> listaCasos;
+		private ArrayList<AbstractCommand> listaComandosDosCasos;
 		
 		public int verificaAtribuicao(String input) {
 				if(input.contains("\"")) return 1;
@@ -200,7 +202,7 @@ public class IsiLangParser extends Parser {
 									
 						for(IsiSymbol variavel : listaSimbolos){
 							if(!symbolTableAtribuidos.exists(variavel.getName())) {
-								System.out.println("WARNING: Variável" + variavel.getName() + " inicializada, mas não atribuida");
+								System.out.println("WARNING: Variável " + variavel.getName() + " inicializada, mas não atribuida");
 							}
 						}
 					
@@ -612,6 +614,13 @@ public class IsiLangParser extends Parser {
 			match(SC);
 
 								 	IsiVariable var = (IsiVariable)symbolTable.get(_readID);
+								 	
+								 	int variableType = var.getType();
+
+									if (!symbolTableAtribuidos.exists(_exprID)) {
+										symbolTableAtribuidos.add(symbol);
+									}
+								 
 								 	CommandLeitura cmd = new CommandLeitura(_readID, var);
 								 	stack.peek().add(cmd);
 								 
@@ -730,10 +739,11 @@ public class IsiLangParser extends Parser {
 								_varName = _input.LT(-1).getText();
 								
 								
+								int variableType = ((IsiVariable)symbolTable.get(_exprID)).getType();
 								
-								symbol = new IsiVariable(_exprID, _tipo, _exprContent);
+								symbol = new IsiVariable(_exprID, variableType, _exprContent);
 								
-								boolean validacaoTipoIgual = (((IsiVariable)symbolTable.get(_exprID)).getType() == verificaAtribuicao(_exprContent));
+								boolean validacaoTipoIgual = (variableType == verificaAtribuicao(_exprContent));
 
 								if(!validacaoTipoIgual) {
 									throw new IsiSemanticException("Value " + _exprContent + " missmatches variable " + _exprID + " type");
@@ -778,6 +788,7 @@ public class IsiLangParser extends Parser {
 		}
 		public TerminalNode INT() { return getToken(IsiLangParser.INT, 0); }
 		public TerminalNode DECIMAL() { return getToken(IsiLangParser.DECIMAL, 0); }
+		public TerminalNode TEXTO() { return getToken(IsiLangParser.TEXTO, 0); }
 		public List<CmdContext> cmd() {
 			return getRuleContexts(CmdContext.class);
 		}
@@ -817,7 +828,7 @@ public class IsiLangParser extends Parser {
 			_exprDecision += _input.LT(-1).getText(); 
 			setState(108);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << DECIMAL) | (1L << INT))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << DECIMAL) | (1L << INT) | (1L << TEXTO))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -919,6 +930,7 @@ public class IsiLangParser extends Parser {
 		public TerminalNode FCH() { return getToken(IsiLangParser.FCH, 0); }
 		public TerminalNode INT() { return getToken(IsiLangParser.INT, 0); }
 		public TerminalNode DECIMAL() { return getToken(IsiLangParser.DECIMAL, 0); }
+		public TerminalNode TEXTO() { return getToken(IsiLangParser.TEXTO, 0); }
 		public List<CmdContext> cmd() {
 			return getRuleContexts(CmdContext.class);
 		}
@@ -958,7 +970,7 @@ public class IsiLangParser extends Parser {
 			_exprDecision += _input.LT(-1).getText(); 
 			setState(142);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << DECIMAL) | (1L << INT))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << DECIMAL) | (1L << INT) | (1L << TEXTO))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1169,7 +1181,7 @@ public class IsiLangParser extends Parser {
 		"\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\6\f\u0097\n\f\r\f\16\f\u0098\3\f\3"+
 		"\f\3\f\3\r\3\r\3\r\3\r\7\r\u00a2\n\r\f\r\16\r\u00a5\13\r\3\16\3\16\3\16"+
 		"\3\16\3\16\3\16\3\16\3\16\5\16\u00af\n\16\3\16\2\2\17\2\4\6\b\n\f\16\20"+
-		"\22\24\26\30\32\2\3\3\2\27\31\2\u00b4\2\34\3\2\2\2\4%\3\2\2\2\6(\3\2\2"+
+		"\22\24\26\30\32\2\3\3\2\27\32\2\u00b4\2\34\3\2\2\2\4%\3\2\2\2\6(\3\2\2"+
 		"\2\b;\3\2\2\2\n=\3\2\2\2\fN\3\2\2\2\16P\3\2\2\2\20X\3\2\2\2\22`\3\2\2"+
 		"\2\24h\3\2\2\2\26\u008a\3\2\2\2\30\u009d\3\2\2\2\32\u00ae\3\2\2\2\34\35"+
 		"\7\3\2\2\35\36\5\4\3\2\36\37\5\n\6\2\37 \7\4\2\2 !\b\2\1\2!\3\3\2\2\2"+

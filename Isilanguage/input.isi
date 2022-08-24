@@ -1,22 +1,16 @@
 programa
+	inteiro a, b, c;
 	
-	inteiro a, c, b;
-	decimal x, y, z;
-	texto t1;
-	
-	leia(a);
-	leia(b);
-	
-	c = 2;
-	a = 1;
-	b = 1;
-	x = 1.5;
-	se ( a > b ) entao {
-		escreva(a);
-	}
-	
-	enquanto (a > b) {
-		escreva(a);
-	}
+	a = 1 ^ 2 + 2;
+	b = 3 ^ 5 + 5 ^ 2;
+	b = a ^ 2;
+	c = 1 + 2;
+	c = 1 - 2;
+	c = 1 * 2;
+	c = 1 / 2;
+	a = 32 ^ 32 + 2523 * 2;
+	a = 2 + 32 ^ 40 + 2;
+	a = 3 $ 5 + 10;
+	a = a % 5 * b;
 	
 fimprog;

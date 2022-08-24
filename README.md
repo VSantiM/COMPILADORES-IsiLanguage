@@ -8,7 +8,7 @@ Integrantes:
 -Victor Santi Martins 11201721890
 
 # Itens do Checklist entregues
-###Checklist básico (Necessário para o C)
+### Checklist básico (Necessário para o C)
 ------------------------------------------
 * Possuir 2 tipos de dados (pelo menos 1 String) 
 * Possuir a instrução de decisão (if/else)
@@ -20,7 +20,7 @@ Integrantes:
 * Verificar se há variáveis declaradas e não-utilizadas (warning)
 * Geração de pelo menos 1 linguagem destino (C/Java/Python)
 
-###Checklist elementos adicionais (Necessário para o B)
+### Checklist elementos adicionais (Necessário para o B)
 -----------------------------------------------
 * Mais tipos de dados
 * Inclusão de novos operadores (exponenciação, raiz quadrada, logaritmos)

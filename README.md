@@ -1,11 +1,11 @@
 # COMPILADORES-IsiLanguage
 -----------------------------------------
 Integrantes:
--Erick
--Marcos Moreira Lopes 11201810618
--Matheus Pacheco de Oliveira
--Thaina Abade Siemerink 11118815
--Victor Santi Martins 11201721890
+- Erick
+- Marcos Moreira Lopes 11201810618
+- Matheus Pacheco de Oliveira
+- Thaina Abade Siemerink 11118815
+- Victor Santi Martins 11201721890
 
 # Itens do Checklist entregues
 ### Checklist básico (Necessário para o C)

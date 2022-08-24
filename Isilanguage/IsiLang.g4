@@ -34,6 +34,8 @@ grammar IsiLang;
 	private ArrayList<AbstractCommand> listaTrue;
 	private ArrayList<AbstractCommand> listaFalse;
 	private ArrayList<AbstractCommand> listaComandos;
+	private ArrayList<AbstractCommand> listaCasos;
+	private ArrayList<AbstractCommand> listaComandosDosCasos;
 	
 	public int verificaAtribuicao(String input) {
 			if(input.contains("\"")) return 1;
@@ -70,7 +72,7 @@ prog	: 'programa' decl bloco 'fimprog'
 						
 			for(IsiSymbol variavel : listaSimbolos){
 				if(!symbolTableAtribuidos.exists(variavel.getName())) {
-					System.out.println("WARNING: Variável" + variavel.getName() + " inicializada, mas não atribuida");
+					System.out.println("WARNING: Variável " + variavel.getName() + " inicializada, mas não atribuida");
 				}
 			}
 		}
@@ -131,6 +133,13 @@ cmdleitura	: 'leia' AP
 					 SC
 					 {
 					 	IsiVariable var = (IsiVariable)symbolTable.get(_readID);
+					 	
+					 	int variableType = var.getType();
+
+						if (!symbolTableAtribuidos.exists(_exprID)) {
+							symbolTableAtribuidos.add(symbol);
+						}
+					 
 					 	CommandLeitura cmd = new CommandLeitura(_readID, var);
 					 	stack.peek().add(cmd);
 					 }
@@ -163,10 +172,11 @@ cmdattrib	: 	ID
 					_varName = _input.LT(-1).getText();
 					
 					
+					int variableType = ((IsiVariable)symbolTable.get(_exprID)).getType();
 					
-					symbol = new IsiVariable(_exprID, _tipo, _exprContent);
+					symbol = new IsiVariable(_exprID, variableType, _exprContent);
 					
-					boolean validacaoTipoIgual = (((IsiVariable)symbolTable.get(_exprID)).getType() == verificaAtribuicao(_exprContent));
+					boolean validacaoTipoIgual = (variableType == verificaAtribuicao(_exprContent));
 
 					if(!validacaoTipoIgual) {
 						throw new IsiSemanticException("Value " + _exprContent + " missmatches variable " + _exprID + " type");
@@ -186,7 +196,7 @@ cmdif	: 	'se'
 			AP 
 			ID {_exprDecision = _input.LT(-1).getText(); }
 			OPREL {_exprDecision += _input.LT(-1).getText(); }
-			(ID | INT | DECIMAL) {_exprDecision += _input.LT(-1).getText(); }
+			(ID | INT | DECIMAL | TEXTO) {_exprDecision += _input.LT(-1).getText(); }
 			FP 
 			'entao' 
 			ACH 
@@ -220,7 +230,7 @@ cmdwhile : 'enquanto'
 			AP
 			ID {_exprDecision = _input.LT(-1).getText(); }
 			OPREL {_exprDecision += _input.LT(-1).getText(); }
-			(ID | INT | DECIMAL) {_exprDecision += _input.LT(-1).getText(); }
+			(ID | INT | DECIMAL | TEXTO) {_exprDecision += _input.LT(-1).getText(); }
 			FP 
 			ACH 
 			{ 
@@ -270,7 +280,7 @@ FP	: ')'
 SC	: ';'
 	;
 	
-OP	: '+' | '-' | '*' | '/'
+OP	: '+' | '-' | '*' | '/' | '^'
 	;
 
 ATTR	: '='
@@ -301,6 +311,6 @@ INT		: [0-9]+
 		
 TEXTO	: '"' .*? '"'
 		;
-	
+		
 		
 WS	: (' ' | '\t' | '\n' | '\r') -> skip;	

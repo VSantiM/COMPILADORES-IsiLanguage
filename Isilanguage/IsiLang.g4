@@ -34,8 +34,6 @@ grammar IsiLang;
 	private ArrayList<AbstractCommand> listaTrue;
 	private ArrayList<AbstractCommand> listaFalse;
 	private ArrayList<AbstractCommand> listaComandos;
-	private ArrayList<AbstractCommand> listaCasos;
-	private ArrayList<AbstractCommand> listaComandosDosCasos;
 	
 	public int verificaAtribuicao(String input) {
 			if(input.contains("\"")) return 1;
@@ -280,7 +278,7 @@ FP	: ')'
 SC	: ';'
 	;
 	
-OP	: '+' | '-' | '*' | '/' | '^'
+OP	: '+' | '-' | '*' | '/' | '^' | '$' | '%'
 	;
 
 ATTR	: '='

@@ -24,6 +24,10 @@ public class IsiSymbolTable {
 		return map.get(symbolName);
 	}
 	
+	public IsiSymbol getType(String symbolName) {
+		return map.get(symbolName);
+	}
+	
 	public ArrayList<IsiSymbol> getAllSymbols(){
 		ArrayList<IsiSymbol> lista = new ArrayList<IsiSymbol>();
 		for(IsiSymbol symbol : map.values()) {

@@ -37,11 +37,11 @@ public class IsiVariable extends IsiSymbol {
 	
 	public String generateJavaCode() {
 		String str;
-		if(type == INT) {
+		if(this.type == INT) {
 			return "int " + super.name + ";";
 		}
 		
-		if(type == DECIMAL) {
+		if(this.type == DECIMAL) {
 			return "double " + super.name + ";";
 		}
 		return "String " + super.name + ";";
